@@ -1,70 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Periodic Table Atom Explorer</title>
-<style>
- body {background:#0b0e1a;color:#fff;font-family:Arial;margin:0;padding:20px;backdrop-filter:blur(10px);} 
- h1{text-align:center;font-size:32px;margin-bottom:20px;color:#7df9ff;text-shadow:0 0 10px #00eaff;} 
- .search-box{width:100%;max-width:500px;margin:10px auto 25px;display:flex;gap:10px;} 
- .search-box input{flex:1;padding:12px;border-radius:10px;border:none;background:#111;color:#fff;} 
- .periodic-table{display:grid;grid-template-columns:repeat(18,1fr);gap:6px;margin:auto;max-width:1300px;} 
- .element{padding:10px;border-radius:10px;text-align:center;cursor:pointer;transition:0.3s;background:#1b1f32;box-shadow:0 0 12px #0004;} 
- .element:hover{transform:scale(1.08);box-shadow:0 0 20px #00eaff;} 
- .result{margin-top:40px;background:#111827a8;padding:20px;border-radius:20px;display:none;backdrop-filter:blur(12px);} 
- .atom{position:relative;width:300px;height:300px;margin:20px auto;} 
- .nucleus{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;border-radius:50%;background:#202840;box-shadow:0 0 20px #00eaff;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;animation:vibrate 1.8s infinite;} 
- @keyframes vibrate{0%{transform:translate(-50%,-50%) translate(0);}50%{transform:translate(-50%,-50%) translate(3px,-3px);}100%{transform:translate(-50%,-50%) translate(0);} }
- .particle{width:14px;height:14px;border-radius:50%;margin:2px;font-size:10px;display:flex;justify-content:center;align-items:center;} 
- .p{background:#ff4d6d;box-shadow:0 0 6px #ff4d6d;} .n{background:#6a7fff;box-shadow:0 0 6px #6a7fff;} 
- .shell{position:absolute;top:50%;left:50%;border:1px solid #00eaff44;border-radius:50%;animation:spin linear infinite;} 
- @keyframes spin{from{transform:translate(-50%,-50%) rotate(0);}to{transform:translate(-50%,-50%) rotate(360deg);} }
- .electron{width:14px;height:14px;background:#7df9ff;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 10px #00eaff;} 
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Periodic Table</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>Interactive Periodic Table Atom Explorer</h1>
-<div class="search-box">
-  <input id="search" placeholder="Search element by name or symbol..." oninput="filterElements()" />
-</div>
-<div class="periodic-table" id="ptable"></div>
-<div class="result" id="result"></div>
-<script>
-const elements=[
-  {symbol:"H",name:"Hydrogen",number:1,n:0},
-  {symbol:"He",name:"Helium",number:2,n:2},
-  {symbol:"Li",name:"Lithium",number:3,n:4},
-  {symbol:"Be",name:"Beryllium",number:4,n:5},
-  {symbol:"B",name:"Boron",number:5,n:6},
-  {symbol:"C",name:"Carbon",number:6,n:6},
-  {symbol:"N",name:"Nitrogen",number:7,n:7},
-  {symbol:"O",name:"Oxygen",number:8,n:8},
-  {symbol:"F",name:"Fluorine",number:9,n:10},
-  {symbol:"Ne",name:"Neon",number:10,n:10},
-  {symbol:"Na",name:"Sodium",number:11,n:12},
-  {symbol:"Mg",name:"Magnesium",number:12,n:12},
-  {symbol:"Al",name:"Aluminium",number:13,n:14},
-  {symbol:"Si",name:"Silicon",number:14,n:14},
-  {symbol:"P",name:"Phosphorus",number:15,n:16},
-  {symbol:"S",name:"Sulfur",number:16,n:16},
-  {symbol:"Cl",name:"Chlorine",number:17,n:18},
-  {symbol:"Ar",name:"Argon",number:18,n:22},
-  {symbol:"K",name:"Potassium",number:19,n:20},
-  {symbol:"Ca",name:"Calcium",number:20,n:20}
-];;i<=118;i++){elements.push({symbol:"E"+i,name:"Element "+i,number:i,n:i});}
-const ptable=document.getElementById("ptable");
-elements.forEach(e=>{
- let box=document.createElement("div");box.className="element";box.innerHTML=`<b>${e.symbol}</b><br>${e.number}`;box.onclick=()=>show(e);ptable.appendChild(box);
-});
-function filterElements(){let q=document.getElementById("search").value.toLowerCase();let boxes=[...ptable.children];boxes.forEach((b,i)=>{let e=elements[i];b.style.display=(e.symbol.toLowerCase().includes(q)||e.name.toLowerCase().includes(q))?"block":"none";});}
-function show(e){let result=document.getElementById("result");let p=e.number;let n=e.n;let el=e.number;let shells=[2,8,18,32,32,18,8];let dist=[60,90,130,170,210,250,290];let electronsLeft=el;let shellHTML="";
-for(let i=0;i<shells.length&&electronsLeft>0;i++){let count=Math.min(shells[i],electronsLeft);shellHTML+=`<div class='shell' style='width:${dist[i]}px;height:${dist[i]}px;animation-duration:${6+i}s;'>`;
- for(let j=0;j<count;j++){let angle=(360/count)*j;
- shellHTML+=`<div class='electron' style='transform:translate(-50%,-50%) rotate(${angle}deg) translate(${dist[i]/2}px)'></div>`;}
- shellHTML+=`</div>`;electronsLeft-=count;}
-let nucleusHTML="";for(let i=0;i<p;i++) nucleusHTML+=`<div class='particle p'>p</div>`;for(let i=0;i<n;i++) nucleusHTML+=`<div class='particle n'>n</div>`;
-result.innerHTML=`<h2>${e.name} (${e.symbol})</h2><p>Atomic Number: ${e.number}</p><div class='atom'><div class='nucleus'>${nucleusHTML}</div>${shellHTML}</div>`;result.style.display="block";}
-</script>
+
+    <h1>Interactive Periodic Table</h1>
+    <div id="periodic-table"></div>
+
+    <div id="detail-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-modal">&times;</span>
+            
+            <div class="info-panel">
+                <h2 id="el-name">Element Name</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">Atomic Number: <span class="stat-value" id="el-z"></span></div>
+                    <div class="stat-item">Mass Number: <span class="stat-value" id="el-mass"></span></div>
+                    <div class="stat-item">Protons: <span class="stat-value" id="el-p"></span></div>
+                    <div class="stat-item">Neutrons: <span class="stat-value" id="el-n"></span></div>
+                    <div class="stat-item">Electrons: <span class="stat-value" id="el-e"></span></div>
+                    <div class="stat-item">Configuration: <span class="stat-value" id="el-config"></span></div>
+                </div>
+                <div class="description" id="el-desc"></div>
+            </div>
+
+            <div class="atom-container" id="atom-view">
+                </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
